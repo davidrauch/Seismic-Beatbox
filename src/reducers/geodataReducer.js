@@ -9,6 +9,7 @@ export default function geodata(state = initialState, action) {
     case REQUEST_DATA:
       return state.geodata;
     case RECEIVE_DATA:
+      console.log(sanitizePosition([13.404954, 52.520008]));
       const dataPoints = parseDataPoints(action.data);
       if(dataPoints.length) {
         return {
@@ -35,7 +36,8 @@ const parseDataPoints = geodata =>
       return {
         height: 1000 - sanitizeDepth(item.geometry.coordinates[2]),
         strength : item.properties.mag,
-        time: sanitizeTime(item.properties.time)
+        time: sanitizeTime(item.properties.time),
+        position: sanitizePosition(item.geometry.coordinates)
       }
     })
     .filter(item => item !== null)
@@ -49,4 +51,17 @@ const sanitizeTime = time => {
   // Round time into 5 minute intervals
   const msInFiveMinutes = 5 * 60 * 1000;
   return Math.round(time / msInFiveMinutes) * msInFiveMinutes
+}
+
+const sanitizePosition = coordinates => {
+  let x = (coordinates[0] + 180) / 3.6;
+
+  let latRad = coordinates[1] * Math.PI / 180;
+  let mercN = Math.log(Math.tan((Math.PI / 4) + (latRad / 2)));
+  let y = 50 + (100 * mercN / (2 * Math.PI));
+
+  return {
+    left: x,
+    bottom: y
+  }
 }

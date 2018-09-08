@@ -1,3 +1,29 @@
 .Map {
-  margin: 1em;
+  margin-top: 1em;
+  position: relative;
+}
+
+.Map .earth {
+  opacity: 0.8;
+}
+
+.Map > .point {
+  position: absolute;
+  background-color: red;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  margin-top: -8px;
+  border-radius: 8px;
+}
+
+.Map > .point.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 1s, opacity 1s linear;
+}
+
+.Map > .point.visible {
+  visibility: visible;
+  opacity: 0.8;
 }

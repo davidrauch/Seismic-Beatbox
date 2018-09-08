@@ -1,3 +1,7 @@
-.Button:active {
+.Button {
   opacity: 0.8;
+}
+
+.Button:active {
+  opacity: 0.6;
 }
