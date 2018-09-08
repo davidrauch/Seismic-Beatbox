@@ -7,6 +7,7 @@ export default {
   geodata: {
     startTime: 0,
     endTime: 0,
+    exactEndTime: 0,
     dataPoints: [],
   },
 }

@@ -1,4 +1,6 @@
+// Internal
 import initialState from '../store/initialState';
+import CONFIG from '../config';
 import {
   AUDIO_START,
   AUDIO_STOP,
@@ -8,13 +10,11 @@ import {
   UPDATE_DATA
 } from '../actions/geodataActions'
 
-const AUDIO_CONTEXT = new AudioContext();
-
+// The audio reducer
 export default function audio(state = initialState, action) {
-
   switch(action.type) {
     case AUDIO_START:
-      //console.log("Started");
+      // On audio start, go to beginning and start playing
       return {
         ...state.audio,
         index: 0,
@@ -22,7 +22,7 @@ export default function audio(state = initialState, action) {
         isPlaying: true,
       }
     case AUDIO_STOP:
-      //console.log("Stopped");
+      // On audio stop, go to beginning and stop playing
       return {
         ...state.audio,
         index: 0,
@@ -30,19 +30,8 @@ export default function audio(state = initialState, action) {
         isPlaying: false,
       }
     case AUDIO_TICK:
-      if(!state.audio.isPlaying) {
-        return state.audio;
-      }
-
-      //console.log(`Tick ${state.audio.position}`);
-      if(state.audio.index >= state.geodata.dataPoints.length) {
-        return {
-          ...state.audio,
-          index: 0,
-          time: state.geodata.startTime,
-          isPlaying: false,
-        }
-      } else {
+      // On audio tick, check if there is something left to play
+      if(state.audio.index < state.geodata.dataPoints.length) {
         let newIndex = state.audio.index;
 
         // Play sounds for all earthquakes with the current time
@@ -52,36 +41,56 @@ export default function audio(state = initialState, action) {
           newIndex++;
         }
 
+        // Set new index and next time
         return {
           ...state.audio,
           index: newIndex,
-          time: state.audio.time + (5 * 60 * 1000),
+          time: state.audio.time + CONFIG.GEODATA_ROUND_TIME_TO_MS,
         }
+      } else {
+        return state.audio;
       }
     case UPDATE_DATA:
+      // On data update, set the start time if it has not already been set
+      // (We don't want to jump back to the beginning if we are already playing)
       return {
         ...state.audio,
-        index: 0,
-        time: state.geodata.startTime,
+        time: state.audio.time ? state.audio.time : state.geodata.startTime,
       }
     default:
       return state.audio;
   }
 }
 
-
+// Plays the sound for a datapoint
 const playDataPoint = dataPoint =>
   playSound(Math.max(40, dataPoint.height - 500))
 
+// The audio context used to play all sounds
+const AUDIO_CONTEXT = new AudioContext();
+
+// Plays a sound with a given frequency and duration
+// Returns a Promise that resolves when the sound has finished playing
 const playSound = (frequency, duration = 0.4, type = 'sine') =>
   new Promise((resolve, reject) => {
+    // Generate oscillator (sound producer) and gain (volume)
     let oscillator = AUDIO_CONTEXT.createOscillator();
     let gain = AUDIO_CONTEXT.createGain();
+
+    // Set sound type and frequency
     oscillator.type = type;
-    oscillator.connect(gain);
     oscillator.frequency.value = frequency;
+
+    // Connect oscillator and gain
+    oscillator.connect(gain);
     gain.connect(AUDIO_CONTEXT.destination);
+
+    // Start playing
     oscillator.start(0);
+
+    // Slowly ramp down volume of sound
     gain.gain.exponentialRampToValueAtTime(0.00001,AUDIO_CONTEXT.currentTime + duration);
+
+    // Resolve promise once sound is quiet
     setTimeout(resolve, duration * 1000);;
   })

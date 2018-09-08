@@ -1,0 +1,15 @@
+.Point {
+  position: absolute;
+  background-color: red;
+}
+
+.Point.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 1s, opacity 1s linear;
+}
+
+.Point.visible {
+  visibility: visible;
+  opacity: 0.8;
+}

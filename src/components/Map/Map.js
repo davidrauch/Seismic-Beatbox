@@ -1,24 +1,26 @@
+// External
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+
+// Internal
+import Point from './Point/Point';
 import * as audioActions from '../../actions/audioActions';
 import './Map.css';
 import earth from './mercator.svg';
 
-
+// A Map showing the world and points for earthquakes
 class Map extends React.Component {
-
   render() {
+    // Generate points
     const points = this.props.geodata.dataPoints
-      //.filter(dataPoint => dataPoint.time === this.props.audio.time)
       .map((dataPoint, index) => (
-        <div
-          key={'point' + index}
-          className={'point ' + (dataPoint.time === this.props.audio.time ? 'visible' : 'hidden')}
-          style={{
-            left: dataPoint.position.left + '%',
-            bottom: dataPoint.position.bottom + '%',
-          }} />
+        <Point
+          key={'point' + index} // Required by React because this is a list
+          visible={dataPoint.time === this.props.audio.time}
+          position={dataPoint.position}
+          strength={dataPoint.strength}
+        />
       ));
 
     return (

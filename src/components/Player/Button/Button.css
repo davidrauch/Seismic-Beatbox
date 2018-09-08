@@ -1,7 +1,11 @@
-.Button {
+.Button.enabled {
   opacity: 0.8;
 }
 
-.Button:active {
-  opacity: 0.6;
+.Button.enabled:active {
+  opacity: 0.5;
+}
+
+.Button.disabled {
+  opacity: 0.5;
 }

@@ -10,6 +10,7 @@
   position: relative;
   left: 0%;
   transition: left .2s;
+  opacity: 0.8;
 }
 
 .ProgressBar > .point {
