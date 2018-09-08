@@ -4,6 +4,9 @@ import {
   AUDIO_STOP,
   AUDIO_TICK,
 } from '../actions/audioActions';
+import {
+  UPDATE_DATA
+} from '../actions/geodataActions'
 
 const AUDIO_CONTEXT = new AudioContext();
 
@@ -14,14 +17,16 @@ export default function audio(state = initialState, action) {
       //console.log("Started");
       return {
         ...state.audio,
-        position: 0,
+        index: 0,
+        time: state.geodata.startTime,
         isPlaying: true,
       }
     case AUDIO_STOP:
       //console.log("Stopped");
       return {
         ...state.audio,
-        position: 0,
+        index: 0,
+        time: state.geodata.startTime,
         isPlaying: false,
       }
     case AUDIO_TICK:
@@ -30,42 +35,53 @@ export default function audio(state = initialState, action) {
       }
 
       //console.log(`Tick ${state.audio.position}`);
-      if(state.audio.position >= state.geodata.length) {
+      if(state.audio.index >= state.geodata.dataPoints.length) {
         return {
           ...state.audio,
-          position: 0,
+          index: 0,
+          time: state.geodata.startTime,
           isPlaying: false,
         }
       } else {
-        playSound(Math.max(40, state.geodata[state.audio.position].height - 500));
+        let newIndex = state.audio.index;
+
+        // Play sounds for all earthquakes with the current time
+        while(state.geodata.dataPoints[newIndex]
+              && state.geodata.dataPoints[newIndex].time === state.audio.time) {
+          playDataPoint(state.geodata.dataPoints[newIndex]);
+          newIndex++;
+        }
+
         return {
           ...state.audio,
-          position: state.audio.position + 1,
+          index: newIndex,
+          time: state.audio.time + (5 * 60 * 1000),
         }
+      }
+    case UPDATE_DATA:
+      return {
+        ...state.audio,
+        index: 0,
+        time: state.geodata.startTime,
       }
     default:
       return state.audio;
   }
 }
 
-/*const playGeodata = async geodata => {
-  const noteFrequencies = [261.6, 277.2, 293.7, 311.1, 329.6, 349.2, 370.0, 392.0, 415.3, 440.0, 466.2, 493.9]
 
-  for(let item of geodata) {
-    await playSound(context, Math.max(40, item.height - 500));
-  }
-}*/
+const playDataPoint = dataPoint =>
+  playSound(Math.max(40, dataPoint.height - 500))
 
-function playSound(frequency, duration = 0.4, type = 'sine'){
-  return new Promise((resolve, reject) => {
-    var o=AUDIO_CONTEXT.createOscillator()
-    var g=AUDIO_CONTEXT.createGain()
-    o.type=type
-    o.connect(g)
-    o.frequency.value=frequency
-    g.connect(AUDIO_CONTEXT.destination)
-    o.start(0)
-    g.gain.exponentialRampToValueAtTime(0.00001,AUDIO_CONTEXT.currentTime + duration)
-    setTimeout(resolve, duration * 1000);
+const playSound = (frequency, duration = 0.4, type = 'sine') =>
+  new Promise((resolve, reject) => {
+    let oscillator = AUDIO_CONTEXT.createOscillator();
+    let gain = AUDIO_CONTEXT.createGain();
+    oscillator.type = type;
+    oscillator.connect(gain);
+    oscillator.frequency.value = frequency;
+    gain.connect(AUDIO_CONTEXT.destination);
+    oscillator.start(0);
+    gain.gain.exponentialRampToValueAtTime(0.00001,AUDIO_CONTEXT.currentTime + duration);
+    setTimeout(resolve, duration * 1000);;
   })
-}

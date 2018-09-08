@@ -9,11 +9,17 @@ export const receiveData = (data) => ({
   data
 });
 
+export const UPDATE_DATA = "GEODATA_UPDATE_DATA";
+export const updateData = () => ({
+  type: UPDATE_DATA
+});
+
 export function fetchData() {
   return dispatch => {
     dispatch(requestData())
     return fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson')
       .then(response => response.json())
       .then(json => dispatch(receiveData(json)))
+      .then(() => dispatch(updateData()))
   }
 }

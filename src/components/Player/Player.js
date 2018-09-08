@@ -18,8 +18,10 @@ class Player extends React.Component {
         <Button icon={ICON_PLAY} onClick={this.props.audioActions.audioStart} />
         <Button icon={ICON_STOP} onClick={this.props.audioActions.audioStop} />
         <ProgressBar
-          position={this.props.audio.position}
-          dataPoints={this.props.geodata}
+          currentTime={this.props.audio.time}
+          startTime={this.props.geodata.startTime}
+          endTime={this.props.geodata.endTime}
+          dataPoints={this.props.geodata.dataPoints}
         />
       </div>
     );

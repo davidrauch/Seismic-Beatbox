@@ -4,6 +4,6 @@ import audioReducer from './audioReducer';
 
 export default (state = initialState, action) => ({
   ...state,
-  audio: audioReducer(state, action),
   geodata: geodataReducer(state, action),
+  audio: audioReducer(state, action),
 });

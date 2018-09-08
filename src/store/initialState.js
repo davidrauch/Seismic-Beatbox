@@ -1,7 +1,12 @@
 export default {
   audio: {
-    position: 0,
+    index: 0,
+    time: 0,
     isPlaying: false,
   },
-  geodata: {},
+  geodata: {
+    startTime: 0,
+    endTime: 0,
+    dataPoints: [],
+  },
 }

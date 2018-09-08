@@ -8,14 +8,23 @@ export default class ProgressBar extends React.Component {
       return null;
     }
 
-    const progress = this.props.position / this.props.dataPoints.length * 100;
+    // Calculate our current time position in percent
+    const progress = calculatePercentProgress(
+      this.props.currentTime,
+      this.props.startTime,
+      this.props.endTime
+    );
 
     const points = this.props.dataPoints.map((dataPoint, index) => (
       <div
         key={'point' + index}
         className='point'
         style={{
-          left: index / this.props.dataPoints.length * 100 + '%',
+          left: calculatePercentProgress(
+            dataPoint.time,
+            this.props.startTime,
+            this.props.endTime
+          ) + '%',
           bottom: dataPoint.height / 12 + '%'
         }} />
     ));
@@ -27,4 +36,10 @@ export default class ProgressBar extends React.Component {
       </div>
     );
   }
+}
+
+const calculatePercentProgress = (currentTime, startTime, endTime) => {
+  const duration = endTime - startTime;
+  const progress = currentTime - startTime;
+  return progress / duration * 100;
 }
