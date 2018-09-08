@@ -1,0 +1,9 @@
+.Player {
+  margin: 1em;
+  display: flex;
+  flex-direction: row;
+}
+
+.Player > * {
+  margin: 0 0.1em;
+}

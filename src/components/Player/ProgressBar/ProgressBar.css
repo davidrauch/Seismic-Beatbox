@@ -1,0 +1,22 @@
+.ProgressBar {
+  flex-grow: 1;
+  display: flex;
+  position: relative;
+}
+
+.ProgressBar > .handle {
+  width: 2px;
+  background-color: white;
+  position: relative;
+  left: 0%;
+  transition: left .2s;
+}
+
+.ProgressBar > .point {
+  position: absolute;
+  background-color: white;
+  opacity: 0.5;
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+}
