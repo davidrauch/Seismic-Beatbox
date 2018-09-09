@@ -67,12 +67,25 @@ const playDataPoint = dataPoint =>
   playSound(Math.max(40, dataPoint.height - 500))
 
 // The audio context used to play all sounds
-const AUDIO_CONTEXT = new AudioContext();
+let AUDIO_CONTEXT = null;
+
+// Check if AudioContext is supported
+// Safari offers webkitAudioContext which has the same API, but sounds horrible. So we don't use it.
+if (AudioContext) {
+    AUDIO_CONTEXT = new AudioContext();
+} else {
+    // Web Audio API is not supported
+    alert('Sorry, but the Web Audio API is not supported by your browser');
+}
 
 // Plays a sound with a given frequency and duration
 // Returns a Promise that resolves when the sound has finished playing
 const playSound = (frequency, duration = 0.4, type = 'sine') =>
   new Promise((resolve, reject) => {
+    if(!AUDIO_CONTEXT) {
+      reject();
+    }
+
     // Generate oscillator (sound producer) and gain (volume)
     let oscillator = AUDIO_CONTEXT.createOscillator();
     let gain = AUDIO_CONTEXT.createGain();
