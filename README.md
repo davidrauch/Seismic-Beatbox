@@ -4,6 +4,8 @@ The Seismic Beatbox generates beats based on seismic activity, i.e. earthquakes.
 Just [open the website](https://davidrauch.github.io/Seismic-Beatbox/), press play, and listen to earthquakes of the last 24 hours.
 Once you reach the end, the App continues to monitor for new earthquakes and plays sounds as they occur.
 
+**NOTE**: The Web Audio API is not yet fully supported by all major browsers. Please use a recent version of Google Chrome.
+
 ## Usage
 
 Start the development server with `yarn start` or `npm start`.
