@@ -1,7 +1,7 @@
 # The Seismic Beatbox
 
 The Seismic Beatbox generates beats based on seismic activity, i.e. earthquakes.
-Just open the website, press play, and listen to earthquakes of the last 24 hours.
+Just [open the website](https://davidrauch.github.io/Seismic-Beatbox/), press play, and listen to earthquakes of the last 24 hours.
 Once you reach the end, the App continues to monitor for new earthquakes and plays sounds as they occur.
 
 ## Usage

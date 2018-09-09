@@ -71,8 +71,8 @@ let AUDIO_CONTEXT = null;
 
 // Check if AudioContext is supported
 // Safari offers webkitAudioContext which has the same API, but sounds horrible. So we don't use it.
-if (AudioContext) {
-    AUDIO_CONTEXT = new AudioContext();
+if (window.AudioContext) {
+    AUDIO_CONTEXT = new window.AudioContext();
 } else {
     // Web Audio API is not supported
     alert('Sorry, but the Web Audio API is not supported by your browser');
@@ -82,28 +82,29 @@ if (AudioContext) {
 // Returns a Promise that resolves when the sound has finished playing
 const playSound = (frequency, duration = 0.4, type = 'sine') =>
   new Promise((resolve, reject) => {
+    // Only play sound if there is an AudioContext
     if(!AUDIO_CONTEXT) {
       reject();
+    } else {
+      // Generate oscillator (sound producer) and gain (volume)
+      let oscillator = AUDIO_CONTEXT.createOscillator();
+      let gain = AUDIO_CONTEXT.createGain();
+
+      // Set sound type and frequency
+      oscillator.type = type;
+      oscillator.frequency.value = frequency;
+
+      // Connect oscillator and gain
+      oscillator.connect(gain);
+      gain.connect(AUDIO_CONTEXT.destination);
+
+      // Start playing
+      oscillator.start(0);
+
+      // Slowly ramp down volume of sound
+      gain.gain.exponentialRampToValueAtTime(0.00001,AUDIO_CONTEXT.currentTime + duration);
+
+      // Resolve promise once sound is quiet
+      setTimeout(resolve, duration * 1000);;
     }
-
-    // Generate oscillator (sound producer) and gain (volume)
-    let oscillator = AUDIO_CONTEXT.createOscillator();
-    let gain = AUDIO_CONTEXT.createGain();
-
-    // Set sound type and frequency
-    oscillator.type = type;
-    oscillator.frequency.value = frequency;
-
-    // Connect oscillator and gain
-    oscillator.connect(gain);
-    gain.connect(AUDIO_CONTEXT.destination);
-
-    // Start playing
-    oscillator.start(0);
-
-    // Slowly ramp down volume of sound
-    gain.gain.exponentialRampToValueAtTime(0.00001,AUDIO_CONTEXT.currentTime + duration);
-
-    // Resolve promise once sound is quiet
-    setTimeout(resolve, duration * 1000);;
   })
